@@ -10,12 +10,21 @@ model.add(tf.layers.dense({ units: 1, inputShape: [1] }));
 model.compile({ optimizer: "sgd", loss: "meanSquaredError" });
 
 // Función para entrenar el modelo
-function entrenarModelo() {
-  // const 400 iteraciones basta para una aproximación bastante acertada 
-  model.fit(xs, ys, { epochs: 250 }).then(() => {
-    document.getElementById("resultado").innerText =
-      "Entrenamiento completado. El modelo está listo para ser utilizado.";
+async function entrenarModelo() {
+  // Limpiar gráfica previa
+  tfvis.show.fitCallbacks(document.getElementById('grafica-entrenamiento'), ['loss']);
+
+  // Entrenar el modelo y visualizar la pérdida
+  const history = await model.fit(xs, ys, { 
+    epochs: 250,
+    callbacks: tfvis.show.fitCallbacks(
+      { name: 'Pérdida de entrenamiento' },
+      ['loss']
+    )
   });
+
+  document.getElementById("resultado").innerText =
+    "Entrenamiento completado. El modelo está listo para ser utilizado.";
 }
 
 // Función para predecir y
@@ -29,4 +38,3 @@ function predecirY() {
   document.getElementById("prediccion-redondeada").innerText =
     "El valor predicho de Y redondeado es: " + prediccionRedondeada;
 }
-
